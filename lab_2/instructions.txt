@@ -1,0 +1,6 @@
+Hello,
+
+In order for the notebook to run you will need the data form moodle and put it in the data folder ( GlobalLandTemperaturesByCity.csv and GlobalTemperatures.csv ).
+You also need to install some pip packages, that you can install by running pip install -r requirements.txt
+
+Code for all my labs can be found on https://github.com/M4TTRX/cloudtp if more help is needed
