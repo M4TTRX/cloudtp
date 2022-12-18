@@ -32,7 +32,7 @@ source cloudtp-env/bin/activate
 
 **Windows:**
 ```bash
-cloudtp-env/bin/activate
+cloudtp-env/Scripts/activate
 ```
 
 4. Install the requirements
