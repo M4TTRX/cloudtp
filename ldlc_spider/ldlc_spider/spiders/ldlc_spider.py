@@ -21,22 +21,20 @@ class QuotesSpider(scrapy.Spider):
         # stock is based on an enum that is sotred in the data-stock-web 
         # attribute of the div.modal-stock-web.pointer.stock element
         stock_type = response.css('div.modal-stock-web.pointer.stock::attr(data-stock-web)').get()
-        match stock_type:
-            case '1':
-                return 'IN STOCK'
-            case '2':
-                return 'IN STOCK'
-            case '4':
-                return 'IN STOCK IN UNDER 7 DAYS'
-            case '5':
-                return 'IN STOCK IN 7 TO 15 DAYS'
-            case '6':
-                return 'IN STOCK IN 15+ DAYS'
-            case '9':
-                return 'OUT OF STOCK'
-            case _:
-                self.log('Unknown stock type for product: ' + response.url)
-                return 'UNKNOWN'
+        if stock_type == '1':
+            return 'IN STOCK'
+        if stock_type == '2':
+            return 'IN STOCK'
+        if stock_type == '4':
+            return 'IN STOCK IN UNDER 7 DAYS'
+        if stock_type == '5':
+            return 'IN STOCK IN 7 TO 15 DAYS'
+        if stock_type == '6':
+            return 'IN STOCK IN 15+ DAYS'
+        if stock_type == '9':
+            return 'OUT OF STOCK'  
+        self.log('Unknown stock type for product: ' + response.url)
+        return 'UNKNOWN'
     
     def get_reviews(self, response) -> int:
         try:
