@@ -1,1 +1,5 @@
 **.DS_Store
+**.hcl
+**.backup
+**.0_x5
+__pycache__/
