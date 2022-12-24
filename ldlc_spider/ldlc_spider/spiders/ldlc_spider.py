@@ -1,13 +1,38 @@
+from urllib.parse import urlencode
+
 import scrapy
 import datetime
-class QuotesSpider(scrapy.Spider):
 
+
+# def get_scrapeops_url(url):
+#     payload = {'api_key': 'abe7126f-d87d-453d-8606-06ad3a79b69e', 'url': url}
+#     proxy_url = 'https://proxy.scrapeops.io/v1/?' + urlencode(payload)
+#     return proxy_url
+#
+#
+# url = get_scrapeops_url('https://www.ldlc.com/')
+# print(url)
+
+def get_scrapeops_url(url) -> str:
+    payload = {'api_key': 'abe7126f-d87d-453d-8606-06ad3a79b69e', 'url': url}
+    proxy_url = 'https://proxy.scrapeops.io/v1/?' + urlencode(payload)
+    return proxy_url
+
+
+class QuotesSpider(scrapy.Spider):
     name = "ldlc"
     start_urls = [
-        'https://www.ldlc.com/products_sitemap.xml',
+        get_scrapeops_url('https://www.ldlc.com/products_sitemap.xml'),
     ]
-    
+    # user_agent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 " \
+    # "Safari/537.1"
+    # user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 "
+
     BASE_URL = 'https://www.ldlc.com'
+
+
+
+
     def get_price(self, response) -> float:
         try:
             euros = float(response.css('div.price div.price::text').get()[:-1])
@@ -32,10 +57,10 @@ class QuotesSpider(scrapy.Spider):
         if stock_type == '6':
             return 'IN STOCK IN 15+ DAYS'
         if stock_type == '9':
-            return 'OUT OF STOCK'  
+            return 'OUT OF STOCK'
         self.log('Unknown stock type for product: ' + response.url)
         return 'UNKNOWN'
-    
+
     def get_reviews(self, response) -> int:
         try:
             return int(response.css('div.average em::text')[1].get()[4:-5])
@@ -47,22 +72,27 @@ class QuotesSpider(scrapy.Spider):
             return int(response.css('div.note::text').get())
         except:
             return 0
+
     def get_categories(self, response) -> dict:
         categories = response.css('div.breadcrumb ul li')
         categories_dict = {}
         for i in range(1, len(categories), 2):
-            categories_dict[f'category_{(i-1)>>1}'] = {
+            categories_dict[f'category_{(i - 1) >> 1}'] = {
                 'name': categories[i].css('a::text').get()[29:-25],
                 'url': self.BASE_URL + categories[i].css('a::attr(href)').get()
             }
         return categories_dict
-            
+
     def parse(self, response):
-        
+
         # explore all products from the product sitemap
         if type(response) is scrapy.http.response.xml.XmlResponse:
             response.selector.remove_namespaces()
-            products = response.xpath('//url/loc/text()')[:40]
+            products_urls = response.xpath('url/loc/text()').getall()
+            # for url in products_urls:
+            #     print(url)
+            # return
+            products = [get_scrapeops_url(url) for url in products_urls]
             yield from response.follow_all(products, callback=self.parse)
         yield {
             'title': response.css('title::text').get(),

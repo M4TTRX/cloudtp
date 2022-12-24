@@ -14,7 +14,9 @@ NEWSPIDER_MODULE = 'ldlc_spider.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'ldlc_spider (+http://www.yourdomain.com)'
+
+#USER_AGENT = 'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148'
+#USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
