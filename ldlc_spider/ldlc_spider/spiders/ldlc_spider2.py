@@ -4,23 +4,8 @@ import scrapy
 import datetime
 
 
-# def get_scrapeops_url(url):
-#     payload = {'api_key': 'abe7126f-d87d-453d-8606-06ad3a79b69e', 'url': url}
-#     proxy_url = 'https://proxy.scrapeops.io/v1/?' + urlencode(payload)
-#     return proxy_url
-#
-#
-# url = get_scrapeops_url('https://www.ldlc.com/')
-# print(url)
-
-def get_scrapeops_url(url) -> str:
-    payload = {'api_key': 'abe7126f-d87d-453d-8606-06ad3a79b69e', 'url': url}
-    proxy_url = 'https://proxy.scrapeops.io/v1/?' + urlencode(payload)
-    return proxy_url
-
-
 class QuotesSpider(scrapy.Spider):
-    name = "ldlc"
+    name = "ldlc2"
     start_urls = [
         'https://www.ldlc.com/products_sitemap.xml',
     ]
@@ -43,9 +28,6 @@ class QuotesSpider(scrapy.Spider):
         "Sec-Fetch-User": "?1",
         "Cache-Control": "max-age=0",
     }
-
-
-
 
     def get_price(self, response) -> float:
         try:
@@ -98,13 +80,13 @@ class QuotesSpider(scrapy.Spider):
         return categories_dict
 
     def parse(self, response):
-
         # explore all products from the product sitemap
         if type(response) is scrapy.http.response.xml.XmlResponse:
             response.selector.remove_namespaces()
             products_urls = response.xpath('url/loc/text()').getall()
-            products_number = len(products_urls)//3
-            products = [url for url in products_urls[:products_number]]    # one third of products for the first spider
+            products_number = len(products_urls) // 3
+            products = [url for url in products_urls[products_number:(
+                        2 * products_number)]]  # one third of products for the first spider
             yield from response.follow_all(products, headers=self.HEADERS, callback=self.parse)
         yield {
             'title': response.css('title::text').get(),
